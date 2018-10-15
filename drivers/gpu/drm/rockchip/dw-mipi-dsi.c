@@ -776,7 +776,7 @@ static unsigned long dw_mipi_dsi_calc_bandwidth(struct dw_mipi_dsi *dsi)
 		bpp = 24;
 	}
 
-	lanes = dsi->slave ? dsi->lanes * 2 : dsi->lanes;
+	lanes = /*dsi->slave ? dsi->lanes * 2 : */dsi->lanes;
 
 	mpclk = DIV_ROUND_UP(dsi->mode.clock, MSEC_PER_SEC);
 	if (mpclk) {
@@ -1187,7 +1187,7 @@ static void dw_mipi_dsi_video_packet_config(struct dw_mipi_dsi *dsi,
 	int pkt_size;
 
 	if (dsi->slave || dsi->master)
-		pkt_size = VID_PKT_SIZE(mode->hdisplay / 2 + 4);
+		pkt_size = VID_PKT_SIZE(mode->hdisplay/* / 2 + 4*/);
 	else
 		pkt_size = VID_PKT_SIZE(mode->hdisplay);
 
@@ -1366,7 +1366,8 @@ static void dw_mipi_dsi_host_init(struct dw_mipi_dsi *dsi)
 
 static void dw_mipi_dsi_pre_enable(struct dw_mipi_dsi *dsi)
 {
-	dw_mipi_dsi_pre_init(dsi);
+	if (dsi->slave)
+		dw_mipi_dsi_pre_enable(dsi->slave);
 
 	clk_prepare_enable(dsi->dphy.cfg_clk);
 	clk_prepare_enable(dsi->dphy.ref_clk);
@@ -1385,9 +1386,6 @@ static void dw_mipi_dsi_pre_enable(struct dw_mipi_dsi *dsi)
 	mipi_dphy_init(dsi);
 	mipi_dphy_power_on(dsi);
 	dw_mipi_dsi_host_power_on(dsi);
-
-	if (dsi->slave)
-		dw_mipi_dsi_pre_enable(dsi->slave);
 }
 
 static void dw_mipi_dsi_enable(struct dw_mipi_dsi *dsi)
@@ -1414,6 +1412,7 @@ static void dw_mipi_dsi_encoder_enable(struct drm_encoder *encoder)
 	struct dw_mipi_dsi *dsi = encoder_to_dsi(encoder);
 
 	dw_mipi_dsi_vop_routing(dsi);
+	dw_mipi_dsi_pre_init(dsi);
 
 	dw_mipi_dsi_pre_enable(dsi);
 
@@ -1460,9 +1459,9 @@ dw_mipi_dsi_encoder_atomic_check(struct drm_encoder *encoder,
 	s->eotf = TRADITIONAL_GAMMA_SDR;
 	s->color_space = V4L2_COLORSPACE_DEFAULT;
 
-	if (dsi->slave)
+	/*if (dsi->slave)
 		s->output_flags |= ROCKCHIP_OUTPUT_DSI_DUAL_CHANNEL;
-
+*/
 	if (IS_DSI1(dsi))
 		s->output_flags |= ROCKCHIP_OUTPUT_DSI_DUAL_LINK;
 
@@ -1555,7 +1554,7 @@ static int dw_mipi_dsi_dual_channel_probe(struct dw_mipi_dsi *dsi)
 			return -EPROBE_DEFER;
 
 		dsi->slave->master = dsi;
-		dsi->lanes /= 2;
+		//dsi->lanes /= 2;
 
 		dsi->slave->lanes = dsi->lanes;
 		dsi->slave->channel = dsi->channel;

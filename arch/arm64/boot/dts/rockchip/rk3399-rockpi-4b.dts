@@ -286,18 +286,18 @@
 	status = "okay";
 };
 
-&hdmi_in_vopl {
+&hdmi_in_vopb {
 	status = "disabled";
 };
 
 &route_hdmi {
 	status = "okay";
 };
-
+/*
 &dp_in_vopb {
 	status = "disabled";
 };
-
+*/
 &sdmmc {
 	clock-frequency = <100000000>;
 	clock-freq-min-max = <100000 100000000>;
@@ -608,6 +608,16 @@
 		//spk-con-gpio = <&gpio4 6 GPIO_ACTIVE_HIGH>;
 		//hp-det-gpio = <&gpio4 7 GPIO_ACTIVE_LOW>;
 	};
+
+	rockpi_mcu: rockpi_mcu@45 {
+        	compatible = "rockpi_mcu";
+        	reg = <0x45>;
+    	};
+	rockpi_ft5406: rockpi_ft5406@38 {
+		compatible = "rockpi_ft5406";
+		reg = <0x38>;
+	};
+
 };
 
 &cpu_l0 {
@@ -1044,6 +1054,70 @@
 
 &vopb {
 	assigned-clocks = <&cru DCLK_VOP0_DIV>;
+	assigned-clock-parents = <&cru PLL_CPLL>;
+};
+
+&vopl {
+	assigned-clocks = <&cru DCLK_VOP1_DIV>;
+	assigned-clock-parents = <&cru PLL_VPLL>;
+};
+
+&dsi {
+       status = "okay";
+};
+
+&vopb_out_dsi {
+	status = "disabled";
+};
+
+&vopl_out_dsi {
+    status = "disabled";
+};
+
+&dsi1 {
+       rockchip,dual-channel = <&dsi>;
+       status = "okay";
+
+       panel: panel@0 {
+               compatible ="rockpi,tc358762";
+               reg = <0>;
+               status = "okay";
+       
+       };
+
+};
+
+&dsi1_in_vopl {
+       status = "disabled";
+};
+
+&dsi1_in_vopb {
+       status = "okay";
+};
+
+&route_dsi {
+       status = "disabled";
+ };
+&route_dsi1{
+       status = "okay";
+       connect = <&vopb_out_dsi1>;
+};
+
+&hdmi_in_vopl {
+       status = "okay";
+};
+
+&hdmi_in_vopb {
+       status = "disabled";
+};
+
+&route_hdmi {
+       status = "okay";
+       connect = <&vopl_out_hdmi>;
+};
+/*
+&vopb {
+	assigned-clocks = <&cru DCLK_VOP0_DIV>;
 	assigned-clock-parents = <&cru PLL_VPLL>;
 };
 
@@ -1051,3 +1125,57 @@
 	assigned-clocks = <&cru DCLK_VOP1_DIV>;
 	assigned-clock-parents = <&cru PLL_CPLL>;
 };
+
+&dsi {
+       status = "okay";
+};
+
+&vopb_out_dsi {
+	status = "disabled";
+};
+
+&vopl_out_dsi {
+    status = "disabled";
+};
+
+&dsi1 {
+       rockchip,dual-channel = <&dsi>;
+       status = "okay";
+
+       panel: panel@0 {
+               compatible ="rockpi,tc358762";
+               reg = <0>;
+               status = "okay";
+       
+       };
+
+};
+
+&dsi1_in_vopl {
+       status = "okay";
+};
+
+&dsi1_in_vopb {
+       status = "disabled";
+};
+
+&route_dsi {
+       status = "disabled";
+ };
+&route_dsi1{
+       status = "okay";
+       connect = <&vopl_out_dsi1>;
+};
+
+&hdmi_in_vopl {
+       status = "disabled";
+};
+
+&hdmi_in_vopb {
+       status = "okay";
+};
+
+&route_hdmi {
+       status = "okay";
+       connect = <&vopl_out_hdmi>;
+};*/
