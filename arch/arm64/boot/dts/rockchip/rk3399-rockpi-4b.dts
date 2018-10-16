@@ -303,6 +303,15 @@
 &route_hdmi {
 	status = "okay";
 };
+
+&isp0 {
+	status = "okay";
+};  
+
+&isp0_mmu {
+	status = "okay";
+};
+
 /*
 &dp_in_vopb {
 	status = "disabled";
@@ -627,6 +636,14 @@
 		compatible = "rockpi_ft5406";
 		reg = <0x38>;
 	};
+
+};
+
+&i2c4 {
+	status = "okay";
+	i2c-scl-rising-time-ns = <168>;
+        i2c-scl-falling-time-ns = <4>;
+        clock-frequency = <400000>;
 
 };
 
@@ -1022,7 +1039,14 @@
 				<3 15 RK_FUNC_GPIO &pcfg_output_low>;
 		};
 	};
-
+	
+	i2c4 {
+		i2c4_xfer: i2c4-xfer {
+        		rockchip,pins =
+                		<1 12 RK_FUNC_1 &pcfg_pull_none_12ma>,
+                		<1 11 RK_FUNC_1 &pcfg_pull_none>;
+		};
+	};
 };
 
 &pvtm {
