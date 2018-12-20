@@ -47,8 +47,6 @@ static int fts_i2c_read(struct i2c_client *client, char *writebuf,
 			 },
 		};
 		ret = i2c_transfer(client->adapter, msgs, 2);
-		if (ret < 0)
-			LOG_ERR("i2c read error, %d\n", ret);
 	} else {
 		struct i2c_msg msgs[] = {
 			{
@@ -59,10 +57,11 @@ static int fts_i2c_read(struct i2c_client *client, char *writebuf,
 			 },
 		};
 		ret = i2c_transfer(client->adapter, msgs, 1);
-		if (ret < 0)
-			LOG_ERR("i2c read error, %d\n", ret);
 	}
 
+	if (ret < 0){
+		LOG_ERR("i2c 0x%x read error, %d\n", *writebuf, ret);
+	}
 	return ret;
 }
 
@@ -194,15 +193,18 @@ static void rockpi_ft5406_work(struct work_struct *work)
 	int ret = 0, count = 8, td_status;
 
 	while(count > 0) {
-		ret = fts_check_fw_ver(ts_data->client);
-		if (ret == 0)
-			break;
-		LOG_ERR("checking touch ic, countdown: %d\n", count);
-		msleep(1000);
+		msleep(2000);
+		if(rockpi_mcu_is_mcu_power_on()){
+			ret = fts_check_fw_ver(ts_data->client);
+			if (ret == 0)
+				break;
+		}
+		LOG_ERR("checking touch ic, try num: %d\n", count);
 		count--;
 	}
+
 	if (!count) {
-		LOG_ERR("checking touch ic timeout, %d\n", ret);
+		LOG_ERR("checking touch ic timeout, skip it!\n");
 		return;
 	}
 
