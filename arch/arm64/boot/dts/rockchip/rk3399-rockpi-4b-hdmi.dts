@@ -106,7 +106,6 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&host_vbus_drv>;
 		regulator-name = "vcc5v0_host";
-		regulator-always-on;
 	};
 
 	vdd_log: vdd-log {
@@ -173,7 +172,7 @@
 		compatible = "rockchip,dw-hdmi-audio";
 		#sound-dai-cells = <0>;
 	};
-
+/*
 	hdmi_codec: hdmi-codec {
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
@@ -188,7 +187,7 @@
 			sound-dai = <&hdmi>;
 		};
 	};
-
+*/
 	spdif-sound {
 		status = "okay";
 		compatible = "simple-audio-card";
@@ -226,7 +225,7 @@
 	wireless-wlan {
 		compatible = "wlan-platdata";
 		rockchip,grf = <&grf>;
-		wifi_chip_type = "ap6256";
+		wifi_chip_type = "ap6255";
 		sdio_vref = <1800>;
 		WIFI,host_wake_irq = <&gpio0 3 GPIO_ACTIVE_HIGH>;
 		status = "okay";
@@ -264,31 +263,6 @@
 			linux,default-trigger = "rfkill1";
 			default-state = "on";
 			gpios = <&gpio4 30 GPIO_ACTIVE_HIGH>;
-		};
-
-		green@0 {
-			label = "rock960:green:user0";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;
-		};
-		green@1 {
-			label = "rock960:green:user1";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			gpios = <&gpio4 22 GPIO_ACTIVE_HIGH>;
-		};
-		green@2 {
-			label = "rock960:green:user2";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			gpios = <&gpio4 24 GPIO_ACTIVE_HIGH>;
-		};
-		green@3 {
-			label = "rock960:green:user3";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -376,11 +350,6 @@
 };
 
 &i2s2 {
-	#sound-dai-cells = <0>;
-};
-
-&spdif {
-	pinctrl-0 = <&spdif_bus_1>;
 	status = "okay";
 	#sound-dai-cells = <0>;
 };
