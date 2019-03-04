@@ -141,9 +141,9 @@
 
 	clock-frequency = <100000>;
 
-	ov5695: ov5695@36 {
-		compatible = "ovti,ov5695";
-		reg = <0x36>;
+	imx327: imx327@1a {
+		compatible = "sony,imx327";
+		reg = <0x1a>;
 		clocks = <&cru SCLK_CIF_OUT>;
 		clock-names = "xvclk";
 		avdd-supply = <&vcc2v8_dvp>;
@@ -152,6 +152,10 @@
 		pwdn-gpios = <&gpio0 23 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&cif_clkout_m0>;
+		rockchip,camera-module-index = <0>;
+		rockchip,camera-module-facing = "back";
+		rockchip,camera-module-name = "TongJu";
+		rockchip,camera-module-lens-name = "CHT842-MD";
 		port {
 			ucam_out: endpoint {
 				remote-endpoint = <&mipi_in_ucam>;
