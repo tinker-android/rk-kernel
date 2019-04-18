@@ -39,8 +39,11 @@
  *1. fix reset on too high isp_clk rate will result in bus dead;
  *2. add RKMODULE_LSC_CFG ioctl;
  *
+ *v0.1.3:
+ *1. fix wrong RG10 format
+ *2. enable af awb irq
  */
 
-#define RKISP1_DRIVER_VERSION KERNEL_VERSION(0, 1, 0x2)
+#define RKISP1_DRIVER_VERSION KERNEL_VERSION(0, 1, 0x3)
 
 #endif
