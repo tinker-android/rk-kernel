@@ -199,7 +199,7 @@
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
 		simple-audio-card,mclk-fs = <256>;
-		simple-audio-card,name = "HDMI-CODEC";
+		simple-audio-card,name = "rockchiphdmi";
 
 		simple-audio-card,cpu {
 			sound-dai = <&i2s2>;
@@ -211,7 +211,7 @@
 	};
 
 	spdif-sound {
-		status = "okay";
+		status = "disabled";
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "ROCKCHIP,SPDIF";
 		simple-audio-card,cpu {
@@ -223,7 +223,7 @@
 	};
 
 	spdif_out: spdif-out {
-		status = "okay";
+		status = "disabled";
 		compatible = "linux,spdif-dit";
 		#sound-dai-cells = <0>;
 	};
@@ -273,43 +273,17 @@
 		compatible = "gpio-leds";
 		status = "okay";
 
-		yellow {
-			label = "rock960:yellow:wifi";
+		green@0 {
+			label = "rockpi:green:user0";
 			linux,default-trigger = "rfkill0";
 			default-state = "on";
-			gpios = <&gpio4 29 GPIO_ACTIVE_HIGH>;
-		};
-
-		blue {
-			label = "rock960:blue:bluetooth";
-			linux,default-trigger = "rfkill1";
-			default-state = "on";
-			gpios = <&gpio4 30 GPIO_ACTIVE_HIGH>;
-		};
-
-		green@0 {
-			label = "rock960:green:user0";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
 		};
 		green@1 {
-			label = "rock960:green:user1";
+			label = "rockpi:green:user1";
 			linux,default-trigger = "heartbeat";
 			default-state = "on";
-			gpios = <&gpio4 22 GPIO_ACTIVE_HIGH>;
-		};
-		green@2 {
-			label = "rock960:green:user2";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			gpios = <&gpio4 24 GPIO_ACTIVE_HIGH>;
-		};
-		green@3 {
-			label = "rock960:green:user3";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -402,7 +376,7 @@
 
 &spdif {
 	pinctrl-0 = <&spdif_bus_1>;
-	status = "okay";
+	status = "disabled";
 	#sound-dai-cells = <0>;
 };
 
