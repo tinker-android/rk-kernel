@@ -930,7 +930,7 @@
 		rockchip,key_table =
 			<0xbd	KEY_HOME>,
 			<0xf8	KEY_BACK>,
-			<0xbe	KEY_MENU>,
+			<0xb5	KEY_MENU>,
 			<0xb9	KEY_UP>,
 			<0xbb	KEY_DOWN>,
 			<0xbe	KEY_LEFT>,
