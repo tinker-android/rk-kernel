@@ -447,6 +447,12 @@
 
 &hdmi {
 	status = "okay";
+	rockchip,phy-table =
+            <74250000 0x8009 0x0004 0x0272>,
+            <165000000 0x802b 0x0004 0x0209>,
+            <297000000 0x8039 0x0005 0x028d>,
+            <594000000 0x8039 0x0000 0x0031>,
+            <000000000 0x0000 0x0000 0x0000>;
 };
 
 &route_hdmi {
@@ -1105,12 +1111,12 @@
 
 &vopb {
 	assigned-clocks = <&cru DCLK_VOP0_DIV>;
-	assigned-clock-parents = <&cru PLL_CPLL>;
+	assigned-clock-parents = <&cru PLL_VPLL>;
 };
 
 &vopl {
 	assigned-clocks = <&cru DCLK_VOP1_DIV>;
-	assigned-clock-parents = <&cru PLL_VPLL>;
+	assigned-clock-parents = <&cru PLL_CPLL>;
 };
 
 &pinctrl {
