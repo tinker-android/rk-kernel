@@ -18,10 +18,6 @@
 &firmware_android {
 	compatible = "android,firmware";
 	boot_devices = "ff0f0000.dwmmc";
-	vbmeta {
-		compatible = "android,vbmeta";
-		parts = "vbmeta,boot,system,vendor,dtbo";
-	};
 	fstab {
 		compatible = "android,fstab";
 		vendor {
@@ -29,7 +25,7 @@
 			dev = "/dev/block/by-name/vendor";
 			type = "ext4";
 			mnt_flags = "ro,barrier=1,inode_readahead_blks=8";
-			fsmgr_flags = "wait,avb";
+			fsmgr_flags = "wait";
 		};
 	};
 };
@@ -124,6 +120,44 @@
 				reg = <0>;
 				remote-endpoint = <&isp_mipi_in>;
 			};
+		};
+	};
+};
+
+&pinctrl {
+	pcfg_pull_none_4ma: pcfg-pull-none-4ma {
+		bias-disable;
+		drive-strength = <4>;
+	};
+
+	isp_pin {
+		isp_mipi: isp-mipi {
+			rockchip,pins =
+				/* cif_clkout */
+				<2 11 RK_FUNC_1 &pcfg_pull_none_4ma>;
+		};
+
+		isp_dvp_d2d9: isp-d2d9 {
+			rockchip,pins =
+				/* cif_data2 ... cif_data9 */
+				<2 0 RK_FUNC_1 &pcfg_pull_down>,
+				<2 1 RK_FUNC_1 &pcfg_pull_down>,
+				<2 2 RK_FUNC_1 &pcfg_pull_down>,
+				<2 3 RK_FUNC_1 &pcfg_pull_down>,
+				<2 4 RK_FUNC_1 &pcfg_pull_down>,
+				<2 5 RK_FUNC_1 &pcfg_pull_down>,
+				/* cif_sync, cif_href */
+				<2 8 RK_FUNC_1 &pcfg_pull_down>,
+				<2 9 RK_FUNC_1 &pcfg_pull_down>,
+				/* cif_clkin */
+				<2 10 RK_FUNC_1 &pcfg_pull_down>;
+		};
+
+		isp_dvp_d0d1: isp-d0d1 {
+			rockchip,pins =
+				/* cif_data0, cif_data1 */
+				<2 12 RK_FUNC_1 &pcfg_pull_down>,
+				<2 13 RK_FUNC_1 &pcfg_pull_down>;
 		};
 	};
 };

@@ -16,10 +16,13 @@
 #include <linux/sysfs.h>
 #include <linux/rk-camera-module.h>
 #include <linux/slab.h>
+#include <linux/version.h>
 #include <media/media-entity.h>
 #include <media/v4l2-async.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-subdev.h>
+
+#define DRIVER_VERSION			KERNEL_VERSION(0, 0x01, 0x0)
 
 #ifndef V4L2_CID_DIGITAL_GAIN
 #define V4L2_CID_DIGITAL_GAIN		V4L2_CID_GAIN
@@ -136,6 +139,7 @@ static const struct regval sc031gs_global_regs[] = {
 	{0x3018, 0x1f},
 	{0x3019, 0xff},
 	{0x301c, 0xb4},
+	{0x3028, 0x82},
 	{0x320c, 0x03},
 	{0x320d, 0x6e},
 //	{0x320e, 0x02},	//120fps
@@ -205,9 +209,10 @@ static const struct regval sc031gs_global_regs[] = {
 	{0x4500, 0x59},
 	{0x4501, 0xc4},
 	{0x5011, 0x00},
-//	{0x0100, 0x01},
+	{0x0100, 0x01},
 	{0x4418, 0x08},
-	{0x4419, 0x8a},
+	{0x4419, 0x8e},
+	{0x0100, 0x00},
 //	test pattern
 //	{0x4501, 0xac},
 //	{0x5011, 0x01},
@@ -290,8 +295,10 @@ static const struct regval sc031gs_global_regs[] = {
 	{0x4501, 0xc4},
 	{0x4603, 0x00},
 	{0x5011, 0x00},
+	{0x0100, 0x01},
 	{0x4418, 0x08},
-	{0x4419, 0x8a},
+	{0x4419, 0x8e},
+	{0x0100, 0x00},
 	{REG_NULL, 0x00},
 #endif
 };
@@ -361,6 +368,8 @@ static int sc031gs_write_array(struct i2c_client *client,
 	for (i = 0; ret == 0 && regs[i].addr != REG_NULL; i++) {
 		ret = sc031gs_write_reg(client, regs[i].addr,
 				       SC031GS_REG_VALUE_08BIT, regs[i].val);
+		if (regs[i].addr == 0x0100 && regs[i].val == 0x01)
+			msleep(10);
 	}
 
 	return ret;
@@ -637,12 +646,12 @@ static int sc031gs_set_ctrl_gain(struct sc031gs *sc031gs, u32 a_gain)
 
 		if (a_gain < 0x20) {
 			ret |= sc031gs_write_reg(sc031gs->client, 0x3314,
-				SC031GS_REG_VALUE_08BIT, 0x3a);
+				SC031GS_REG_VALUE_08BIT, 0x42);
 			ret |= sc031gs_write_reg(sc031gs->client, 0x3317,
 				SC031GS_REG_VALUE_08BIT, 0x20);
 		} else {
 			ret |= sc031gs_write_reg(sc031gs->client, 0x3314,
-				SC031GS_REG_VALUE_08BIT, 0x44);
+				SC031GS_REG_VALUE_08BIT, 0x4f);
 			ret |= sc031gs_write_reg(sc031gs->client, 0x3317,
 				SC031GS_REG_VALUE_08BIT, 0x0f);
 		}
@@ -1042,6 +1051,11 @@ static int sc031gs_probe(struct i2c_client *client,
 	struct v4l2_subdev *sd;
 	char facing[2];
 	int ret;
+
+	dev_info(dev, "driver version: %02x.%02x.%02x",
+		DRIVER_VERSION >> 16,
+		(DRIVER_VERSION & 0xff00) >> 8,
+		DRIVER_VERSION & 0x00ff);
 
 	sc031gs = devm_kzalloc(dev, sizeof(*sc031gs), GFP_KERNEL);
 	if (!sc031gs)

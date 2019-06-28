@@ -38,6 +38,7 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/videodev2.h>
+#include <linux/version.h>
 #include <linux/rk-camera-module.h>
 #include <media/media-entity.h>
 #include <media/v4l2-common.h>
@@ -49,6 +50,7 @@
 #include <media/v4l2-mediabus.h>
 #include <media/v4l2-subdev.h>
 
+#define DRIVER_VERSION			KERNEL_VERSION(0, 0x01, 0x0)
 #define DRIVER_NAME "gc2145"
 #define GC2145_PIXEL_RATE		(120 * 1000 * 1000)
 
@@ -162,7 +164,7 @@ static const struct sensor_register gc2145_dvp_init_regs[] = {
 	{0x20, 0x03},
 	{0x21, 0x40},
 	{0x22, 0xa0},
-	{0x24, 0x16},
+	{0x24, 0x3f},
 	{0x25, 0x01},
 	{0x26, 0x10},
 	{0x2d, 0x60},
@@ -1819,8 +1821,7 @@ static int gc2145_write(struct i2c_client *client, u8 reg, u8 val)
 	u8 buf[2];
 	int ret;
 
-	//dev_info(&client->dev, "%s(%d) enter!\n", __func__, __LINE__);
-	//dev_info(&client->dev, "write reg(0x%x val:0x%x)!\n", reg, val);
+	dev_dbg(&client->dev, "write reg(0x%x val:0x%x)!\n", reg, val);
 
 	buf[0] = reg & 0xFF;
 	buf[1] = val;
@@ -1915,8 +1916,6 @@ static void gc2145_set_streaming(struct gc2145 *gc2145, int on)
 	} else {
 		val = on ? 0x0f : 0;
 		ret = gc2145_write(client, 0xf2, val);
-		val = on ? 0xfe : 0X8e;
-		ret = gc2145_write(client, 0xf9, val);
 	}
 	if (ret)
 		dev_err(&client->dev, "gc2145 soft standby failed\n");
@@ -2100,7 +2099,6 @@ static int gc2145_s_stream(struct v4l2_subdev *sd, int on)
 	struct gc2145 *gc2145 = to_gc2145(sd);
 	int ret = 0;
 
-	//dev_dbg(&client->dev, "%s: on: %d\n", __func__, on);
 	dev_info(&client->dev, "%s: on: %d, %dx%d@%d\n", __func__, on,
 				gc2145->frame_size->width,
 				gc2145->frame_size->height,
@@ -2317,7 +2315,7 @@ static long gc2145_compat_ioctl32(struct v4l2_subdev *sd,
 }
 #endif
 
-int gc2145_init(struct v4l2_subdev *sd, u32 val)
+static int gc2145_init(struct v4l2_subdev *sd, u32 val)
 {
 	int ret;
 	struct gc2145 *gc2145 = to_gc2145(sd);
@@ -2335,7 +2333,7 @@ int gc2145_init(struct v4l2_subdev *sd, u32 val)
 	return ret;
 }
 
-int gc2145_power(struct v4l2_subdev *sd, int on)
+static int gc2145_power(struct v4l2_subdev *sd, int on)
 {
 	int ret;
 	struct gc2145 *gc2145 = to_gc2145(sd);
@@ -2362,7 +2360,6 @@ int gc2145_power(struct v4l2_subdev *sd, int on)
 }
 
 static const struct v4l2_subdev_core_ops gc2145_subdev_core_ops = {
-	.init = gc2145_init,
 	.log_status = v4l2_ctrl_subdev_log_status,
 	.subscribe_event = v4l2_ctrl_subdev_subscribe_event,
 	.unsubscribe_event = v4l2_event_subdev_unsubscribe,
@@ -2554,6 +2551,11 @@ static int gc2145_probe(struct i2c_client *client,
 	struct gc2145 *gc2145;
 	char facing[2];
 	int ret;
+
+	dev_info(dev, "driver version: %02x.%02x.%02x",
+		DRIVER_VERSION >> 16,
+		(DRIVER_VERSION & 0xff00) >> 8,
+		DRIVER_VERSION & 0x00ff);
 
 	gc2145 = devm_kzalloc(&client->dev, sizeof(*gc2145), GFP_KERNEL);
 	if (!gc2145)

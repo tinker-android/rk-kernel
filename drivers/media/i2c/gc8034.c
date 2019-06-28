@@ -14,6 +14,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/regulator/consumer.h>
 #include <linux/sysfs.h>
+#include <linux/version.h>
 #include <linux/rk-camera-module.h>
 #include <media/media-entity.h>
 #include <media/v4l2-async.h>
@@ -21,6 +22,8 @@
 #include <media/v4l2-subdev.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/slab.h>
+
+#define DRIVER_VERSION			KERNEL_VERSION(0, 0x01, 0x0)
 
 #ifndef V4L2_CID_DIGITAL_GAIN
 #define V4L2_CID_DIGITAL_GAIN		V4L2_CID_GAIN
@@ -30,7 +33,7 @@
 #define GC8034_BITS_PER_SAMPLE		10
 #define GC8034_LINK_FREQ_MHZ		336000000
 /* pixel rate = link frequency * 2 * lanes / BITS_PER_SAMPLE */
-#define GC8034_PIXEL_RATE		80000000//268800000
+#define GC8034_PIXEL_RATE		80000000
 #define GC8034_XVCLK_FREQ		24000000
 
 #define CHIP_ID				0x8044
@@ -443,10 +446,10 @@ static const struct gc8034_mode supported_modes[] = {
 		.height = 2448,
 		.max_fps = {
 			.numerator = 10000,
-			.denominator = 300000,
+			.denominator = 299625,
 		},
 		.exp_def = 0x08c6,
-		.hts_def = 0x042c,
+		.hts_def = 0x10b0,
 		.vts_def = 0x09c4,
 		.reg_list = gc8034_3264x2448_regs,
 	},
@@ -575,10 +578,10 @@ static int gc8034_set_fmt(struct v4l2_subdev *sd,
 #endif
 	} else {
 		gc8034->cur_mode = mode;
-		h_blank = mode->hts_def / 2;
+		h_blank = mode->hts_def - mode->width;
 		__v4l2_ctrl_modify_range(gc8034->hblank, h_blank,
 					 h_blank, 1, h_blank);
-		vblank_def = mode->vts_def - mode->height - 36;
+		vblank_def = mode->vts_def - mode->height;
 		__v4l2_ctrl_modify_range(gc8034->vblank, vblank_def,
 					 GC8034_VTS_MAX - mode->height,
 					 1, vblank_def);
@@ -1781,7 +1784,7 @@ static int gc8034_set_ctrl(struct v4l2_ctrl *ctrl)
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
 		/* Update max exposure while meeting expected vblanking */
-		max = gc8034->cur_mode->height + ctrl->val + 36 - 4;
+		max = gc8034->cur_mode->height + ctrl->val - 4;
 		__v4l2_ctrl_modify_range(gc8034->exposure,
 					 gc8034->exposure->minimum, max,
 					 gc8034->exposure->step,
@@ -1806,10 +1809,10 @@ static int gc8034_set_ctrl(struct v4l2_ctrl *ctrl)
 					GC8034_SET_PAGE_ZERO);
 		ret |= gc8034_write_reg(gc8034->client,
 					GC8034_REG_VTS_H,
-					(ctrl->val >> 8) & 0xff);
+					((ctrl->val - 36) >> 8) & 0xff);
 		ret |= gc8034_write_reg(gc8034->client,
 					GC8034_REG_VTS_L,
-					ctrl->val & 0xff);
+					(ctrl->val - 36) & 0xff);
 		break;
 	default:
 		dev_warn(&client->dev, "%s Unhandled id:0x%x, val:0x%x\n",
@@ -1927,6 +1930,11 @@ static int gc8034_probe(struct i2c_client *client,
 	struct v4l2_subdev *sd;
 	char facing[2];
 	int ret;
+
+	dev_info(dev, "driver version: %02x.%02x.%02x",
+		DRIVER_VERSION >> 16,
+		(DRIVER_VERSION & 0xff00) >> 8,
+		DRIVER_VERSION & 0x00ff);
 
 	gc8034 = devm_kzalloc(dev, sizeof(*gc8034), GFP_KERNEL);
 	if (!gc8034)

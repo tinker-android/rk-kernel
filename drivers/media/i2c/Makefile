@@ -93,6 +93,7 @@ obj-$(CONFIG_VIDEO_ML86V7667)	+= ml86v7667.o
 obj-$(CONFIG_VIDEO_OV2659)	+= ov2659.o
 obj-$(CONFIG_VIDEO_TC35874X)	+= tc35874x.o
 obj-$(CONFIG_VIDEO_OV5647)	+= ov5647.o
+obj-$(CONFIG_VIDEO_JX_H65)	+= jx_h65.o
 obj-$(CONFIG_VIDEO_IMX219)	+= imx219.o
 obj-$(CONFIG_VIDEO_IMX258)	+= imx258.o
 obj-$(CONFIG_VIDEO_IMX317)	+= imx317.o
@@ -108,7 +109,8 @@ obj-$(CONFIG_VIDEO_GC2385)	+= gc2385.o
 obj-$(CONFIG_VIDEO_GC5025)	+= gc5025.o
 obj-$(CONFIG_VIDEO_GC8034)	+= gc8034.o
 obj-$(CONFIG_VIDEO_SC031GS)	+= sc031gs.o
-
+obj-$(CONFIG_VIDEO_BF3925)	+= bf3925.o
 obj-$(CONFIG_VIDEO_PREISP_DUMMY_SENSOR) += preisp-dummy.o
 obj-$(CONFIG_VIDEO_VM149C)	+= vm149c.o
+obj-$(CONFIG_VIDEO_DW9714)	+= dw9714.o
 obj-$(CONFIG_VIDEO_VIRT_CAMERA) += virtual-camera.o

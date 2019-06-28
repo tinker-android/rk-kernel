@@ -203,7 +203,7 @@
 		soc-bus0 {
 			bus-id = <0>;
 			timer-us = <20>;
-			enable-msk = <0x4077>;
+			enable-msk = <0x407f>;
 			status = "okay";
 		};
 		soc-bus1 {
@@ -215,7 +215,7 @@
 		soc-bus2 {
 			bus-id = <2>;
 			timer-us = <200>;
-			enable-msk = <0x4007>;
+			enable-msk = <0x4005>;
 			status = "okay";
 		};
 		soc-bus3 {
@@ -228,7 +228,7 @@
 			bus-id = <4>;
 			timer-us = <200>;
 			enable-msk = <0x4001>;
-			status = "okay";
+			status = "disabled";
 		};
 	};
 
@@ -1815,6 +1815,13 @@
 		reset-names = "stmmaceth";
 		/* power-domains = <&power RK1808_PD_GMAC>; */
 		status = "disabled";
+	};
+
+	rockchip_system_monitor: rockchip-system-monitor {
+		compatible = "rockchip,system-monitor";
+
+		rockchip,thermal-zone = "soc-thermal";
+		rockchip,polling-delay = <200>; /* milliseconds */
 	};
 
 	pinctrl: pinctrl {

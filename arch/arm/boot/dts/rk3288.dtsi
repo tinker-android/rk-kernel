@@ -1801,10 +1801,6 @@
 			3               61
 		>;
 
-		opp-100000000 {
-			opp-hz = /bits/ 64 <100000000>;
-			opp-microvolt = <950000>;
-		};
 		opp-200000000 {
 			opp-hz = /bits/ 64 <200000000>;
 			opp-microvolt = <950000>;
@@ -2553,7 +2549,7 @@
 					<2 8 RK_FUNC_1 &pcfg_pull_none>,
 					<2 9 RK_FUNC_1 &pcfg_pull_none>,
 					/* cif_clkin */
-					<2 10 RK_FUNC_1 &pcfg_pull_down>;
+					<2 10 RK_FUNC_1 &pcfg_pull_none>;
 			};
 
 			isp_dvp_d0d1: isp-d0d1 {
