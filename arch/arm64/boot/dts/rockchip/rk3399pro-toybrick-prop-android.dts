@@ -1,5 +1,6 @@
 /dts-v1/;
 #include "rk3399pro-toybrick-prop.dtsi"
+#include "rk3399-android.dtsi"
 
 //#include "lcd-mipi2lvds-for-toybrick.dtsi"
 
@@ -23,6 +24,16 @@
 	status = "okay";
 };
 
+&fiq_debugger {
+	pinctrl-0 = <&uart2c_xfer>;
+};
+
+&rk_key {
+	status = "okay";
+	io-channels = <&saradc 2>;
+	/delete-node/ power-key;
+};
+
 &firmware_android {
 	compatible = "android,firmware";
 	fstab {
@@ -44,7 +55,19 @@
 	};
 };
 
+&spdif {
+	status = "okay";
+};
+
+&dp_sound {
+	status = "okay";
+};
+
 &hdmi_dp_sound {
+	status = "disabled";
+};
+
+&hdmi_sound {
 	status = "okay";
 };
 
