@@ -504,7 +504,7 @@ static int rockchip_pcie_init_port(struct rockchip_pcie *rockchip)
 	struct device *dev = rockchip->dev;
 	int err;
 	u32 status;
-	int timeouts = 500;
+	int timeouts = 600;
 
 	gpiod_set_value(rockchip->ep_gpio, 0);
 
