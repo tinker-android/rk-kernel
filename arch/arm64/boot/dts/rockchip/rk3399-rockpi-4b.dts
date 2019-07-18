@@ -293,6 +293,8 @@
 };
 
 &hdmi {
+	pinctrl-names = "default";
+	pinctrl-0 = <&hdmi_i2c_xfer>, <&hdmi_cec>;
 	status = "okay";
 	rockchip,phy-table =
 		<74250000 0x8009 0x0004 0x0272>,
