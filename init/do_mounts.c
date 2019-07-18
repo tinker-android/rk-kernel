@@ -40,6 +40,7 @@ int __initdata rd_doload;	/* 1 = load RAM disk, 0 = don't load */
 int root_mountflags = MS_RDONLY | MS_SILENT;
 static char * __initdata root_device_name;
 static char __initdata saved_root_name[64];
+static char __initdata boot_dev_name[64];
 static int root_wait;
 
 dev_t ROOT_DEV;
@@ -86,13 +87,27 @@ struct uuidcmp {
 static int match_dev_by_uuid(struct device *dev, const void *data)
 {
 	const struct uuidcmp *cmp = data;
+	struct device *parent = dev;
 	struct hd_struct *part = dev_to_part(dev);
 
 	if (!part->info)
 		goto no_match;
 
-	if (strncasecmp(cmp->uuid, part->info->uuid, cmp->len))
+	if (strncasecmp(cmp->uuid, part->info->uuid, cmp->len)) {
 		goto no_match;
+	}
+
+	do{
+		if(parent->of_node){
+			break;
+		}
+		parent = parent->parent;
+	}while (parent != NULL);
+
+	if(strcmp(boot_dev_name, parent->kobj.name)){
+		printk("VFS: %s not boot device\n", parent->kobj.name);
+		goto no_match;
+	}
 
 	return 1;
 no_match:
@@ -289,6 +304,22 @@ done:
 	return res;
 }
 EXPORT_SYMBOL_GPL(name_to_dev_t);
+
+static int __init boot_dev_setup(char *line){
+	struct device_node* node;
+	struct property* property;
+
+	node = of_find_compatible_node(NULL, NULL, "android,firmware");
+	if(node){
+		property = node->properties->next;
+		if(property){
+			strlcpy(boot_dev_name, property->value, strlen(property->value) + 1);
+		}
+	}
+	return 1;
+};
+
+__setup("storagemedia=", boot_dev_setup);
 
 static int __init root_dev_setup(char *line)
 {
