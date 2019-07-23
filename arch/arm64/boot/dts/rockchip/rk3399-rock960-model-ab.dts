@@ -70,8 +70,8 @@
 
 / {
 
-	model = "ROCK960 - 96boards based on Rockchip RK3399";
-	compatible = "rock960","rockchip,rk3399";
+	model = "ROCK960AB - 96boards based on Rockchip RK3399";
+	compatible = "rock960ab","rockchip,rk3399";
 	chosen {
 	bootargs = "earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1 console=ttyFIQ0 androidboot.baseband=N/A androidboot.veritymode=enforcing androidboot.hardware=rk30board androidboot.console=ttyFIQ0 init=/init initrd=0x62000001,0x00800000 coherent_pool=1m";
 	};
@@ -153,8 +153,44 @@
 		#clock-cells = <0>;
 	};
 
+	hdmi_sound: hdmi-sound {
+		status = "disabled";
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "i2s";
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,name = "rockchip,hdmi";
+
+		simple-audio-card,cpu {
+			sound-dai = <&i2s2>;
+		};
+		simple-audio-card,codec {
+			sound-dai = <&dw_hdmi_audio>;
+		};
+	};
+
+	dw_hdmi_audio: dw-hdmi-audio {
+		status = "disabled";
+		compatible = "rockchip,dw-hdmi-audio";
+		#sound-dai-cells = <0>;
+	};
+
+	hdmi_codec: hdmi-codec {
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "i2s";
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,name = "rockchiphdmi";
+
+		simple-audio-card,cpu {
+			sound-dai = <&i2s2>;
+		};
+
+		simple-audio-card,codec {
+			sound-dai = <&hdmi>;
+		};
+	};
+
 	spdif-sound {
-		status = "okay";
+		status = "disabled";
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "ROCKCHIP,SPDIF";
 		simple-audio-card,cpu {
@@ -166,7 +202,7 @@
 	};
 
 	spdif_out: spdif-out {
-		status = "okay";
+		status = "disabled";
 		compatible = "linux,spdif-dit";
 		#sound-dai-cells = <0>;
 	};
@@ -233,25 +269,25 @@
 		green@0 {
 			label = "rock960:green:user0";
 			linux,default-trigger = "heartbeat";
-			default-state = "on";
+			default-state = "off";
 			gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;
 		};
 		green@1 {
 			label = "rock960:green:user1";
 			linux,default-trigger = "heartbeat";
-			default-state = "on";
+			default-state = "off";
 			gpios = <&gpio4 22 GPIO_ACTIVE_HIGH>;
 		};
 		green@2 {
 			label = "rock960:green:user2";
 			linux,default-trigger = "heartbeat";
-			default-state = "on";
+			default-state = "off";
 			gpios = <&gpio4 24 GPIO_ACTIVE_HIGH>;
 		};
 		green@3 {
 			label = "rock960:green:user3";
 			linux,default-trigger = "heartbeat";
-			default-state = "on";
+			default-state = "off";
 			gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -262,6 +298,8 @@
 };
 
 &hdmi {
+	pinctrl-names = "default";
+	pinctrl-0 = <&hdmi_i2c_xfer>, <&hdmi_cec>;
 	status = "okay";
 	rockchip,phy-table =
 		<74250000 0x8009 0x0004 0x0272>,
@@ -269,10 +307,6 @@
 		<297000000 0x8039 0x0005 0x028d>,
 		<594000000 0x8039 0x0000 0x019d>,
 		<000000000 0x0000 0x0000 0x0000>;
-};
-
-&hdmi_dp_sound {
-	status = "okay";
 };
 
 &hdmi_in_vopl {
@@ -355,7 +389,7 @@
 
 &spdif {
 	pinctrl-0 = <&spdif_bus_1>;
-	status = "okay";
+	status = "disabled";
 	#sound-dai-cells = <0>;
 };
 
@@ -476,7 +510,7 @@
 			};
 
 			vcc1v8_dvp: LDO_REG1 {
-				regulator-name = "vcc1v8_dvp";
+				regulator-name = "vcc1v8_codec";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-always-on;
@@ -698,7 +732,7 @@
 };
 
 &uart2 {
-	status = "okay";
+	status = "disabled";
 };
 
 &uart3 {
