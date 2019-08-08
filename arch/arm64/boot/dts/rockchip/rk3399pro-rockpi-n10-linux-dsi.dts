@@ -50,7 +50,7 @@
 	hdmi_codec: hdmi-codec {
 		status = "okay";
 		compatible = "simple-audio-card";
-		simple-audio-card,fomat = "i2s";
+		simple-audio-card,format = "i2s";
 		simple-audio-card,mclk-fs = <256>;
 		simple-audio-card,name = "HDMI-CODEC";
 
