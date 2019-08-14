@@ -113,6 +113,12 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-evb-v10-linux.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-evb-v11.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-evb-v11-linux.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-npu-evb-v10.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-ficus2-linux.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-rockpi-n10-linux.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-rockpi-n10-linux-dsi.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-toybrick-96ai-linux.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-toybrick-prod-linux.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-toybrick-prop-linux.dtb
 
 always		:= $(dtb-y)
 subdir-y	:= $(dts-dirs)
