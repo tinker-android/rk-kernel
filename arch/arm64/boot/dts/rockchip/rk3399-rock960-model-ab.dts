@@ -268,25 +268,25 @@
 
 		green@0 {
 			label = "rock960:green:user0";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "none";
 			default-state = "off";
 			gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;
 		};
 		green@1 {
 			label = "rock960:green:user1";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "none";
 			default-state = "off";
 			gpios = <&gpio4 22 GPIO_ACTIVE_HIGH>;
 		};
 		green@2 {
 			label = "rock960:green:user2";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "none";
 			default-state = "off";
 			gpios = <&gpio4 24 GPIO_ACTIVE_HIGH>;
 		};
 		green@3 {
 			label = "rock960:green:user3";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "none";
 			default-state = "off";
 			gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
 		};

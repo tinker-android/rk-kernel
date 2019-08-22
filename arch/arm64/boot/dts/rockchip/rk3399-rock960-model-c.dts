@@ -130,6 +130,17 @@
 		regulator-always-on;
 	};
 
+	vcc_otg_vbus: otg-vbus-regulator {
+		compatible = "regulator-fixed";
+		gpio = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&otg_vbus_drv>;
+		regulator-name = "vcc_otg_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+	};
+
 	vdd_log: vdd-log {
 		compatible = "pwm-regulator";
 		pwms = <&pwm2 0 25000 1>;
@@ -268,25 +279,25 @@
 
 		green@0 {
 			label = "rock960:green:user0";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "none";
 			default-state = "off";
 			gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;
 		};
 		green@1 {
 			label = "rock960:green:user1";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "none";
 			default-state = "off";
 			gpios = <&gpio4 22 GPIO_ACTIVE_HIGH>;
 		};
 		green@2 {
 			label = "rock960:green:user2";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "none";
 			default-state = "off";
 			gpios = <&gpio4 24 GPIO_ACTIVE_HIGH>;
 		};
 		green@3 {
 			label = "rock960:green:user3";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "none";
 			default-state = "off";
 			gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
 		};
@@ -685,8 +696,8 @@
 &u2phy0 {
 	status = "okay";
 
-	otg-vbus-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
 	u2phy0_otg: otg-port {
+		vbus-supply = <&vcc_otg_vbus>;
 		status = "okay";
 	};
 
@@ -979,6 +990,13 @@
 		uart0_gpios: uart0-gpios {
 			rockchip,pins =
 				<2 19 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	usb{
+		otg_vbus_drv: otg-vbus-drv {
+			rockchip,pins =
+				<1 3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
