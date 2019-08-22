@@ -130,6 +130,17 @@
 		regulator-always-on;
 	};
 
+	vcc_otg_vbus: otg-vbus-regulator {
+		compatible = "regulator-fixed";
+		gpio = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&otg_vbus_drv>;
+		regulator-name = "vcc_otg_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+	};
+
 	vdd_log: vdd-log {
 		compatible = "pwm-regulator";
 		pwms = <&pwm2 0 25000 1>;
@@ -695,8 +706,8 @@
 &u2phy0 {
 	status = "okay";
 
-	otg-vbus-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
 	u2phy0_otg: otg-port {
+		vbus-supply = <&vcc_otg_vbus>;
 		status = "okay";
 	};
 
@@ -988,12 +999,18 @@
 		};
 	};
 
+	usb{
+		otg_vbus_drv: otg-vbus-drv {
+			rockchip,pins =
+				<1 3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
 	usb2 {
 		host_vbus_drv: host-vbus-drv {
 			rockchip,pins =
 				<4 25 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-
 	};
 
 	pcie {
