@@ -8,7 +8,6 @@
 #include <dt-bindings/sensor-dev.h>
 #include <dt-bindings/pwm/pwm.h>
 #include "rk3399pro.dtsi"
-#include "rk3399-linux.dtsi"
 #include "rk3399-opp.dtsi"
 #include "rk3399-vop-clk-set.dtsi"
 
@@ -139,6 +138,7 @@
 	rk809: pmic@20 {
 		compatible = "rockchip,rk809";
 		reg = <0x20>;
+
 		interrupt-parent = <&gpio1>;
 		interrupts = <RK_PC2 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default", "pmic-sleep",

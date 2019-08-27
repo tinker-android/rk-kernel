@@ -3,10 +3,37 @@
 
 /dts-v1/;
 #include "rk3399pro-vmarc-som.dtsi"
-#include "rk3399-linux.dtsi"
+#include "rk3399-android.dtsi"
 
 / {
 	compatible = "rockchip,rk3399pro-ficus2-linux", "rockchip,rk3399pro";
+
+    chosen {
+		bootargs = "console=ttyFIQ0 androidboot.baseband=N/A androidboot.selinux=permissive androidboot.veritymode=enforcing androidboot.hardware=rk30board androidboot.console=ttyFIQ0 init=/init initrd=0x62000000,0x00800000 earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1";
+	};
+
+    firmware {
+    	firmware_android: android {
+    	    compatible = "android,firmware";
+            fstab {
+                compatible = "android,fstab";
+                system {
+                    compatible = "android,system";
+                    dev = "/dev/block/by-name/system";
+                    type = "ext4";
+                    mnt_flags = "ro,barrier=1,inode_readahead_blks=8";
+                    fsmgr_flags = "wait,verify";
+                };
+                vendor {
+                    compatible = "android,vendor";
+                    dev = "/dev/block/by-name/vendor";
+                    type = "ext4";
+                    mnt_flags = "ro,barrier=1,inode_readahead_blks=8";
+                    fsmgr_flags = "wait,verify";
+                };
+            };
+    	};
+    };
 
 	backlight: backlight {
 		status = "okay";
@@ -59,17 +86,6 @@
 		#clock-cells = <0>;
 	};
 
-	fiq_debugger: fiq-debugger {
-		compatible = "rockchip,fiq-debugger";
-		rockchip,serial-id = <2>;
-		rockchip,wake-irq = <0>;
-		rockchip,irq-mode-enable = <0>;  /* If enable uart uses irq instead of fiq */
-		rockchip,baudrate = <1500000>;  /* Only 115200 and 1500000 */
-		pinctrl-names = "default";
-		pinctrl-0 = <&uart2c_xfer>;
-		interrupts = <GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH 0>;
-	};
-
 	panel: panel {
 		compatible = "simple-panel";
 		backlight = <&backlight>;
@@ -104,6 +120,15 @@
 			};
 		};
 	};
+
+    //rk_headset {
+    //    status = "okay";
+    //    compatible = "rockchip_headset";
+    //    headset_gpio = <&gpio2 RK_PB4 GPIO_ACTIVE_HIGH>;
+    //    pinctrl-names = "default";
+    //    pinctrl-0 = <&hp_det>;
+    //    io-channels = <&saradc 0>;
+    //};
 
 	es8316-sound {
 		status = "okay";
@@ -189,12 +214,10 @@
 	vbus_typec: vbus-typec {
 		compatible = "regulator-fixed";
 		enable-active-high;
-		gpio = <&gpio4 26 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&usb0_en_oc>;
 		regulator-name = "vbus_typec";
-		regulator-always-on;
-		regulator-boot-on;
 		vin-supply = <&vcc5v0_usb>;
 	};
 
@@ -215,7 +238,7 @@
 		wifi_chip_type = "ap6256";
 		sdio_vref = <1800>;
 		WIFI,host_wake_irq = <&gpio0 RK_PA3 GPIO_ACTIVE_HIGH>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	wireless-bluetooth {
@@ -229,13 +252,24 @@
 		BT,reset_gpio    = <&gpio2 RK_PD4 GPIO_ACTIVE_HIGH>;
 		BT,wake_gpio     = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>;
 		BT,wake_host_irq = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
-		status = "okay";
+		status = "disabled";
 	};
+
+	gpio-leds {
+        compatible = "gpio-leds";
+        status = "okay";
+
+        user-led1 {
+            gpios = <&gpio1 RK_PA5 GPIO_ACTIVE_HIGH>;
+            linux,default-trigger = "none";
+            default-state = "off";
+        };
+    };
 };
 
 &spdif {
 	pinctrl-0 = <&spdif_bus>;
-	status = "okay";
+	status = "disabled";
 	#sound-dai-cells = <0>;
 };
 
@@ -248,7 +282,7 @@
 };
 
 &edp {
-	status = "okay";
+	status = "disabled";
 	force-hpd;
 
 	ports {
@@ -263,7 +297,7 @@
 };
 
 &edp_in_vopl {
-	status = "okay";
+	status = "disabled";
 };
 
 &pcie_phy {
@@ -442,38 +476,20 @@
 	};
 
 	ir_key2 {
-		rockchip,usercode = <0xff00>;
-		rockchip,key_table =
-			<0xf9	KEY_HOME>,
-			<0xbf	KEY_BACK>,
-			<0xfb	KEY_MENU>,
-			<0xaa	KEY_REPLY>,
-			<0xb9	KEY_UP>,
-			<0xe9	KEY_DOWN>,
-			<0xb8	KEY_LEFT>,
-			<0xea	KEY_RIGHT>,
-			<0xeb	KEY_VOLUMEDOWN>,
-			<0xef	KEY_VOLUMEUP>,
-			<0xf7	KEY_MUTE>,
-			<0xe7	KEY_POWER>,
-			<0xfc	KEY_POWER>,
-			<0xa9	KEY_VOLUMEDOWN>,
-			<0xa8	KEY_VOLUMEDOWN>,
-			<0xe0	KEY_VOLUMEDOWN>,
-			<0xa5	KEY_VOLUMEDOWN>,
-			<0xab	183>,
-			<0xb7	388>,
-			<0xf8	184>,
-			<0xaf	185>,
-			<0xed	KEY_VOLUMEDOWN>,
-			<0xee	186>,
-			<0xb3	KEY_VOLUMEDOWN>,
-			<0xf1	KEY_VOLUMEDOWN>,
-			<0xf2	KEY_VOLUMEDOWN>,
-			<0xf3	KEY_SEARCH>,
-			<0xb4	KEY_VOLUMEDOWN>,
-			<0xbe	KEY_SEARCH>;
-	};
+        rockchip,usercode = <0xff00>;
+        rockchip,key_table =
+            <0xbd	KEY_HOME>,
+            <0xf8	KEY_BACK>,
+            <0xb5	KEY_MENU>,
+            <0xb9	KEY_UP>,
+            <0xbb	KEY_DOWN>,
+            <0xbe	KEY_LEFT>,
+            <0xb6	KEY_RIGHT>,
+            <0xbf	KEY_VOLUMEUP>,
+            <0xfc	KEY_VOLUMEDOWN>,
+            <0xba	KEY_ENTER>,
+            <0xbc	KEY_POWER>;
+    };
 
 	ir_key3 {
 		rockchip,usercode = <0x1dcc>;
@@ -581,10 +597,11 @@
 
 &u2phy0 {
 	status = "okay";
-	enable-active-high;
-	gpio = <&gpio4 25 GPIO_ACTIVE_HIGH>;
+//	enable-active-high;
+//	gpio = <&gpio4 25 GPIO_ACTIVE_HIGH>;
 
 	u2phy0_otg: otg-port {
+		vbus-supply = <&vbus_typec>;
 		status = "okay";
 	};
 
@@ -668,12 +685,13 @@
 				<4 RK_PD6 0 &pcfg_pull_up>;
 		};
 	};
-//	headphone {
-//		hp_det: hp-det {
-//			rockchip,pins =
-//				<0 RK_PB5 0 &pcfg_pull_up>;
-//		};
-//	};
+
+    headphone {
+		hp_det: hp-det {
+			rockchip,pins =
+				<2 RK_PB4 0 &pcfg_pull_up>;
+		};
+	};
 
 	lcd_rst {
 		lcd_rst_gpio: lcd-rst-gpio {
@@ -699,7 +717,7 @@
 	vbus_typec {
 		usb0_en_oc: usb0-en-oc {
 			rockchip,pins =
-				<4 26 RK_FUNC_GPIO &pcfg_pull_up_10ma>;
+				<4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_up_10ma>;
 		};
 	};
 

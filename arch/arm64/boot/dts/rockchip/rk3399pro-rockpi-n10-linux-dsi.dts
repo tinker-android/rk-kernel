@@ -3,6 +3,7 @@
 
 /dts-v1/;
 #include "rk3399pro-vmarc-som.dtsi"
+#include "rk3399-linux.dtsi"
 
 / {
 	compatible = "rockchip,rk3399pro-ficus2-linux", "rockchip,rk3399pro";
