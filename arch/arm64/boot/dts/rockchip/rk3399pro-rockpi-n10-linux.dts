@@ -7,6 +7,7 @@
 
 / {
 	compatible = "rockchip,rk3399pro-ficus2-linux", "rockchip,rk3399pro";
+	/delete-node/ chosen;
 
 	backlight: backlight {
 		status = "okay";
