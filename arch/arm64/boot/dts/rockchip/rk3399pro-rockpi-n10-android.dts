@@ -7,6 +7,7 @@
 
 / {
 	compatible = "rockchip,rk3399pro-ficus2-linux", "rockchip,rk3399pro";
+	/delete-node/ rk809-sound;
     chosen {
 		bootargs = "console=ttyFIQ0 androidboot.baseband=N/A androidboot.selinux=permissive androidboot.veritymode=enforcing androidboot.hardware=rk30board androidboot.console=ttyFIQ0 init=/init initrd=0x62000000,0x00800000 earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1";
 	};
@@ -412,8 +413,8 @@
 	status = "okay";
 };
 
-&rk809_codec {
-	status = "disabled";
+&rk809 {
+	/delete-node/ codec;
 };
 
 &i2s1 {

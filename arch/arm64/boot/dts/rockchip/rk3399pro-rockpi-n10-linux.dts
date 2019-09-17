@@ -8,6 +8,7 @@
 / {
 	compatible = "rockchip,rk3399pro-ficus2-linux", "rockchip,rk3399pro";
 	/delete-node/ chosen;
+	/delete-node/ rk809-sound;
 
 	backlight: backlight {
 		status = "okay";
@@ -387,8 +388,8 @@
 	status = "okay";
 };
 
-&rk809_codec {
-	status = "disabled";
+&rk809 {
+	/delete-node/ codec;
 };
 
 &i2s1 {
