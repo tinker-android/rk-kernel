@@ -422,6 +422,10 @@
 	status = "okay";
 };
 
+&sdio0 {
+	/delete-property/ sd-uhs-sdr104;
+};
+
 &gmac {
 	phy-supply = <&vcc_phy>;
 	phy-mode = "rgmii";
