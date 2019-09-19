@@ -87,6 +87,7 @@
 	};
 
 	panel: panel {
+		status = "disabled";
 		compatible = "simple-panel";
 		backlight = <&backlight>;
 		enable-gpios = <&gpio4 RK_PD3 GPIO_ACTIVE_HIGH>;
