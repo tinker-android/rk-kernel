@@ -73,6 +73,7 @@
 	};
 
 	panel: panel {
+		status = "disabled";
 		compatible = "simple-panel";
 		backlight = <&backlight>;
 		enable-gpios = <&gpio4 RK_PD3 GPIO_ACTIVE_HIGH>;
@@ -257,7 +258,7 @@
 };
 
 &edp {
-	status = "okay";
+	status = "disabled";
 	force-hpd;
 
 	ports {
@@ -613,12 +614,6 @@
 		phy-supply = <&host_5v>;
 		status = "okay";
 	};
-};
-
-&uart0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_xfer &uart0_cts>;
-	status = "okay";
 };
 
 &usb_host0_ehci {
