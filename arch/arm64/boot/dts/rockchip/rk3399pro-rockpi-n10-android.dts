@@ -345,7 +345,7 @@
 };
 
 &rk809_rtc {
-	status = "disabled";
+	status = "okay";
 };
 
 &i2c2 {
