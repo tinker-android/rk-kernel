@@ -2313,6 +2313,11 @@ vop_crtc_mode_valid(struct drm_crtc *crtc, const struct drm_display_mode *mode,
 		if (clock != request_clock)
 			return MODE_CLOCK_RANGE;
 
+    if(strcmp("1920x2160", mode->name) == 0){
+        if (output_type == DRM_MODE_CONNECTOR_DisplayPort){
+            return MODE_BAD;
+        }
+    }
 	return MODE_OK;
 }
 
