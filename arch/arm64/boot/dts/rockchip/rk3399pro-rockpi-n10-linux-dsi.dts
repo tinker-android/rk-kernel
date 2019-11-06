@@ -568,17 +568,12 @@
 
 &dsi {
 	status = "okay";
-	rockchip,dual-channel = <&dsi1>;
 
 	panel: panel@0 {
 		compatible ="rockpi,tc358762";
 		reg = <0>;
 		status = "okay";
 	};
-};
-
-&dsi1 {
-	status = "okay";
 };
 
 &dsi_in_vopl {
