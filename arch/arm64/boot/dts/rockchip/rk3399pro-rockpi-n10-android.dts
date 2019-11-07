@@ -172,7 +172,7 @@
 	sdio_pwrseq: sdio-pwrseq {
 		status = "okay";
 		compatible = "mmc-pwrseq-simple";
-		clocks = <&rk809 1>;
+		clocks = <&hym8563>;
 		clock-names = "ext_clock";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wifi_enable_h>;
@@ -244,8 +244,6 @@
 
 	wireless-bluetooth {
 		compatible = "bluetooth-platdata";
-		clocks = <&rk809 1>;
-		clock-names = "ext_clock";
 		uart_rts_gpios = <&gpio2 RK_PC3 GPIO_ACTIVE_LOW>;
 		pinctrl-names = "default", "rts_gpio";
 		pinctrl-0 = <&uart0_rts>;
@@ -357,7 +355,7 @@
 		reg = <0x51>;
 		#clock-cells = <0>;
 		clock-frequency = <32768>;
-		clock-output-names = "xin32k";
+		clock-output-names = "hym8563";
 		pinctrl-names = "default";
 		pinctrl-0 = <&hym8563_int>;
 		interrupt-parent = <&gpio4>;
