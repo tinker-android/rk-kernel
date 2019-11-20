@@ -3,6 +3,8 @@
  * imx258 driver
  *
  * Copyright (C) 2017 Fuzhou Rockchip Electronics Co., Ltd.
+ *
+ * V0.0X01.0X01 add poweron function.
  */
 
 #include <linux/clk.h>
@@ -14,6 +16,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/regulator/consumer.h>
 #include <linux/sysfs.h>
+#include <linux/version.h>
 #include <linux/rk-camera-module.h>
 #include <media/media-entity.h>
 #include <media/v4l2-async.h>
@@ -21,6 +24,8 @@
 #include <media/v4l2-subdev.h>
 #include <linux/pinctrl/consumer.h>
 #include "imx258_eeprom_head.h"
+
+#define DRIVER_VERSION			KERNEL_VERSION(0, 0x01, 0x01)
 
 #ifndef V4L2_CID_DIGITAL_GAIN
 #define V4L2_CID_DIGITAL_GAIN		V4L2_CID_GAIN
@@ -116,6 +121,7 @@ struct imx258 {
 	struct v4l2_ctrl	*test_pattern;
 	struct mutex		mutex;
 	bool			streaming;
+	bool			power_on;
 	const struct imx258_mode *cur_mode;
 	u32			module_index;
 	const char		*module_facing;
@@ -1164,10 +1170,6 @@ static int __imx258_start_stream(struct imx258 *imx258)
 {
 	int ret;
 
-	ret = imx258_write_array(imx258->client, imx258_global_regs);
-	if (ret)
-		return ret;
-
 	ret = imx258_write_array(imx258->client, imx258->cur_mode->reg_list);
 	if (ret)
 		return ret;
@@ -1227,6 +1229,44 @@ static int imx258_s_stream(struct v4l2_subdev *sd, int on)
 	}
 
 	imx258->streaming = on;
+
+unlock_and_return:
+	mutex_unlock(&imx258->mutex);
+
+	return ret;
+}
+
+static int imx258_s_power(struct v4l2_subdev *sd, int on)
+{
+	struct imx258 *imx258 = to_imx258(sd);
+	struct i2c_client *client = imx258->client;
+	int ret = 0;
+
+	mutex_lock(&imx258->mutex);
+
+	/* If the power state is not modified - no work to do. */
+	if (imx258->power_on == !!on)
+		goto unlock_and_return;
+
+	if (on) {
+		ret = pm_runtime_get_sync(&client->dev);
+		if (ret < 0) {
+			pm_runtime_put_noidle(&client->dev);
+			goto unlock_and_return;
+		}
+
+		ret = imx258_write_array(imx258->client, imx258_global_regs);
+		if (ret) {
+			v4l2_err(sd, "could not set init registers\n");
+			pm_runtime_put_noidle(&client->dev);
+			goto unlock_and_return;
+		}
+
+		imx258->power_on = true;
+	} else {
+		pm_runtime_put(&client->dev);
+		imx258->power_on = false;
+	}
 
 unlock_and_return:
 	mutex_unlock(&imx258->mutex);
@@ -1359,6 +1399,7 @@ static const struct v4l2_subdev_internal_ops imx258_internal_ops = {
 #endif
 
 static const struct v4l2_subdev_core_ops imx258_core_ops = {
+	.s_power = imx258_s_power,
 	.ioctl = imx258_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl32 = imx258_compat_ioctl32,
@@ -1540,7 +1581,7 @@ static int imx258_check_sensor_id(struct imx258 *imx258,
 			       IMX258_REG_VALUE_16BIT, &id);
 	if (id != CHIP_ID) {
 		dev_err(dev, "Unexpected sensor id(%06x), ret(%d)\n", id, ret);
-		return ret;
+		return -ENODEV;
 	}
 
 	return 0;
@@ -1571,6 +1612,11 @@ static int imx258_probe(struct i2c_client *client,
 	struct v4l2_subdev *eeprom_ctrl;
 	struct imx258_otp_info *otp_ptr;
 	int ret;
+
+	dev_info(dev, "driver version: %02x.%02x.%02x",
+		DRIVER_VERSION >> 16,
+		(DRIVER_VERSION & 0xff00) >> 8,
+		DRIVER_VERSION & 0x00ff);
 
 	imx258 = devm_kzalloc(dev, sizeof(*imx258), GFP_KERNEL);
 	if (!imx258)
