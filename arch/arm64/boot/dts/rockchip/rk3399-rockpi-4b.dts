@@ -740,10 +740,6 @@
 	status = "disabled";
 };
 
-&uart4 {
-	status = "okay";
-};
-
 &usb_host0_ehci {
 	status = "okay";
 };
@@ -931,6 +927,31 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie_clkreqnb_cpm>;
 	status = "okay";
+};
+
+&spi1 {
+	status = "okay";
+	max-freq = <10000000>;
+
+	spiflash: spi-flash@0 {
+		#address-cells = <0x1>;
+		#size-cells = <1>;
+		compatible = "jedec,spi-nor";
+		reg = <0x0>;
+		spi-max-frequency = <10000000>;
+		status = "okay";
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			loader@0 {
+				label = "loader";
+				reg = <0x0 0x400000>;
+			};
+		};
+	};
 };
 
 &pinctrl {
