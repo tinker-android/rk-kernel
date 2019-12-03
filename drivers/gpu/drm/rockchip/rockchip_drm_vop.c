@@ -2735,13 +2735,8 @@ static void vop_crtc_enable(struct drm_crtc *crtc)
 		VOP_CTRL_SET(vop, mipi_dclk_pol, dclk_inv);
 		VOP_CTRL_SET(vop, mipi_dual_channel_en,
 			!!(s->output_flags & ROCKCHIP_OUTPUT_DSI_DUAL_CHANNEL));
-#if 0
 		VOP_CTRL_SET(vop, data01_swap,
 			!!(s->output_flags & ROCKCHIP_OUTPUT_DSI_DUAL_LINK));
-#else
-		printk("\n !!(s->output_flags & ROCKCHIP_OUTPUT_DSI_DUAL_LINK)=%d\n",!!(s->output_flags & ROCKCHIP_OUTPUT_DSI_DUAL_LINK));
-		VOP_CTRL_SET(vop, data01_swap, 1);
-#endif
 		break;
 	case DRM_MODE_CONNECTOR_DisplayPort:
 		VOP_CTRL_SET(vop, dp_dclk_pol, 0);
