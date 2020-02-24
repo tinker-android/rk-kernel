@@ -655,8 +655,8 @@
 		pwdn-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
 		rockchip,camera-module-index = <0>;
 		rockchip,camera-module-facing = "back";
-		rockchip,camera-module-name = "LA6110PA";
-		rockchip,camera-module-lens-name = "YM6011P";
+		rockchip,camera-module-name = "default";
+		rockchip,camera-module-lens-name = "default";
 
 		port {
 			ucam_out0: endpoint {
