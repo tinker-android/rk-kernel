@@ -164,6 +164,14 @@
 		#clock-cells = <0>;
 	};
 
+    clkin_cam: external-camera-clock {
+        compatible = "fixed-clock";
+        clock-frequency = <25000000>;
+        clock-output-names = "cam_clk";
+        #clock-cells = <0>;
+    };
+
+
 	es8316-sound {
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
@@ -644,7 +652,7 @@
 &i2c4 {
 	status = "okay";
 
-	camera1: camera-module@10 {
+	camera0: camera0-module@10 {
 		status = "okay";
 		compatible = "sony,imx219";
 		reg = <0x10>;
@@ -665,6 +673,50 @@
 			};
 		};
 	};
+
+	camera1: camera1-module@36 {
+		status = "disabled";
+		compatible = "ovti,ov5647";
+		reg = <0x36>;
+
+		clocks = <&clkin_cam>;
+        clock-names = "xclk";
+		pinctrl-names = "rockchip,camera_default";
+		pwdn-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+		rockchip,camera-module-index = <0>;
+		rockchip,camera-module-facing = "back";
+		rockchip,camera-module-name = "default";
+		rockchip,camera-module-lens-name = "default";
+
+		port {
+			ucam_out1: endpoint {
+				remote-endpoint = <&mipi_in_ucam0>;
+				data-lanes = <1 2>;
+			};
+		};
+	};
+	camera2: camera2-module@36 {
+        status = "disabled";
+        compatible = "ovti,ov5648";
+        reg = <0x36>;
+
+        clocks = <&cru SCLK_CIF_OUT>;
+        clock-names = "xvclk";
+        pinctrl-names = "rockchip,camera_default";
+        pwdn-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+
+        rockchip,camera-module-index = <0>;
+        rockchip,camera-module-facing = "back";
+        rockchip,camera-module-name = "default";
+        rockchip,camera-module-lens-name = "default";
+
+        port {
+                ucam_out2: endpoint {
+                    remote-endpoint = <&mipi_in_ucam0>;
+                    data-lanes = <1 2>;
+                };
+        };
+    };
 };
 
 &vopb {

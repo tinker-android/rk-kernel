@@ -21,6 +21,7 @@
 
 #include <linux/clk.h>
 #include <linux/delay.h>
+#include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
 #include <linux/init.h>
 #include <linux/io.h>
@@ -35,6 +36,7 @@
 #include <media/v4l2-mediabus.h>
 #include <media/v4l2-of.h>
 
+#define CHIP_ID             0x5647
 #define SENSOR_NAME "ov5647"
 
 #define REG_NULL 0xffff
@@ -70,6 +72,7 @@ struct regval_list {
 
 struct ov5647_state {
 	struct v4l2_subdev sd;
+	struct gpio_desc *pwdn_gpio;
 	struct media_pad pad;
 	struct mutex lock;
 	struct v4l2_mbus_framefmt format;
@@ -761,6 +764,7 @@ static int ov5647_detect(struct v4l2_subdev *sd)
 	u8 read;
 	int ret;
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
+	struct device *dev = &client->dev;
 
 	ret = ov5647_write(sd, OV5647_SW_RESET, 0x01);
 	if (ret < 0)
@@ -783,6 +787,7 @@ static int ov5647_detect(struct v4l2_subdev *sd)
 		dev_err(&client->dev, "ID Low expected 0x47 got %x", read);
 		return -ENODEV;
 	}
+	dev_info(dev, "Detected OV%06x sensor\n", CHIP_ID);
 
 	return ov5647_write(sd, OV5647_SW_RESET, 0x00);
 }
@@ -862,6 +867,11 @@ static int ov5647_probe(struct i2c_client *client,
 		return -EINVAL;
 	}
 
+	sensor->pwdn_gpio = devm_gpiod_get(dev, "pwdn", GPIOD_OUT_HIGH);
+	if (IS_ERR(sensor->pwdn_gpio))
+		dev_warn(dev, "Failed to get pwdn-gpios\n");
+
+	msleep(5);
 	mutex_init(&sensor->lock);
 
 	sensor->cur_mode = &supported_modes[0];
@@ -870,7 +880,7 @@ static int ov5647_probe(struct i2c_client *client,
 
 	ret = ov5647_initialize_controls(sd);
 	if (ret)
-		return ret;
+		goto err_power_off;
 
 	sensor->sd.internal_ops = &ov5647_subdev_internal_ops;
 	sensor->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
@@ -896,6 +906,10 @@ error:
 	media_entity_cleanup(&sd->entity);
 mutex_remove:
 	mutex_destroy(&sensor->lock);
+err_power_off:
+	if (!IS_ERR(sensor->pwdn_gpio))
+		gpiod_set_value_cansleep(sensor->pwdn_gpio, 0);
+
 	return ret;
 }
 
