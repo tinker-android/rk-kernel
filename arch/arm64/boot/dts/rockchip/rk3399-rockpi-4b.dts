@@ -1032,6 +1032,17 @@
 	};
 };
 
+&rk_key {
+    status = "okay";
+
+    power-key {
+		gpios = <&gpio4 26 GPIO_ACTIVE_HIGH>;
+		linux,code = <116>;
+		label = "power";
+		gpio-key,wakeup;
+	};
+};
+
 &gmac {
 	phy-supply = <&vcc_phy>;
 	phy-mode = "rgmii";
