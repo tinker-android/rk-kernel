@@ -164,13 +164,12 @@
 		#clock-cells = <0>;
 	};
 
-    clkin_cam: external-camera-clock {
-        compatible = "fixed-clock";
-        clock-frequency = <25000000>;
-        clock-output-names = "cam_clk";
-        #clock-cells = <0>;
-    };
-
+	clkin_cam: external-camera-clock {
+		compatible = "fixed-clock";
+		clock-frequency = <25000000>;
+		clock-output-names = "cam_clk";
+		#clock-cells = <0>;
+	};
 
 	es8316-sound {
 		compatible = "simple-audio-card";
@@ -365,7 +364,7 @@
 	num-slots = <1>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
-	sd-uhs-sdr104;
+	// sd-uhs-sdr104;
 	status = "okay";
 };
 
@@ -387,6 +386,11 @@
 	rockchip,i2s-broken-burst-len;
 	rockchip,playback-channels = <8>;
 	rockchip,capture-channels = <8>;
+	#sound-dai-cells = <0>;
+};
+
+&i2s1 {
+	status = "disabled";
 	#sound-dai-cells = <0>;
 };
 
@@ -680,7 +684,7 @@
 		reg = <0x36>;
 
 		clocks = <&clkin_cam>;
-        clock-names = "xclk";
+		clock-names = "xclk";
 		pinctrl-names = "rockchip,camera_default";
 		pwdn-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
 		rockchip,camera-module-index = <0>;
@@ -696,27 +700,39 @@
 		};
 	};
 	camera2: camera2-module@36 {
-        status = "disabled";
-        compatible = "ovti,ov5648";
-        reg = <0x36>;
+		status = "disabled";
+		compatible = "ovti,ov5648";
+		reg = <0x36>;
 
-        clocks = <&cru SCLK_CIF_OUT>;
-        clock-names = "xvclk";
-        pinctrl-names = "rockchip,camera_default";
-        pwdn-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+		clocks = <&cru SCLK_CIF_OUT>;
+		clock-names = "xvclk";
+		pinctrl-names = "rockchip,camera_default";
+		pwdn-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
 
-        rockchip,camera-module-index = <0>;
-        rockchip,camera-module-facing = "back";
-        rockchip,camera-module-name = "default";
-        rockchip,camera-module-lens-name = "default";
+		rockchip,camera-module-index = <0>;
+		rockchip,camera-module-facing = "back";
+		rockchip,camera-module-name = "default";
+		rockchip,camera-module-lens-name = "default";
 
-        port {
-                ucam_out2: endpoint {
-                    remote-endpoint = <&mipi_in_ucam0>;
-                    data-lanes = <1 2>;
-                };
-        };
-    };
+		port {
+			ucam_out2: endpoint {
+				remote-endpoint = <&mipi_in_ucam0>;
+				data-lanes = <1 2>;
+			};
+		};
+	};
+};
+
+&i2c2 {
+	status = "okay";
+};
+
+&i2c6 {
+	status = "disabled";
+};
+
+&i2c7 {
+	status = "okay";
 };
 
 &vopb {
@@ -889,6 +905,10 @@
 	status = "disabled";
 };
 
+&uart4 {
+	status = "okay";
+};
+
 &usb_host0_ehci {
 	status = "okay";
 };
@@ -921,6 +941,14 @@
 
 &usbdrd_dwc3_1 {
 	dr_mode = "host";
+	status = "okay";
+};
+
+&pwm0 {
+	status = "okay";
+};
+
+&pwm1 {
 	status = "okay";
 };
 
@@ -1090,8 +1118,15 @@
 };
 
 &spi1 {
-	status = "okay";
+	status = "disabled";
 	max-freq = <10000000>;
+
+	spidev@0 {
+	    compatible = "rockchip,spidev";
+	    status = "disabled";
+	    spi-max-frequency = <10000000>;
+	    reg = <0x0>;
+    };
 
 	spiflash: spi-flash@0 {
 		#address-cells = <0x1>;
@@ -1099,7 +1134,7 @@
 		compatible = "jedec,spi-nor";
 		reg = <0x0>;
 		spi-max-frequency = <10000000>;
-		status = "okay";
+		status = "disabled";
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -1112,6 +1147,18 @@
 			};
 		};
 	};
+};
+
+&spi2 {
+	status = "okay";
+	max-freq = <48000000>;
+
+	spidev@0 {
+	    compatible = "rockchip,spidev";
+	    spi-max-frequency = <48000000>;
+	    status = "okay";
+	    reg = <0x0>;
+    };
 };
 
 &pinctrl {
