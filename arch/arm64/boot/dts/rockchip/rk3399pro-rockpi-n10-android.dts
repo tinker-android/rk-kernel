@@ -584,11 +584,15 @@
 	sd-uhs-sdr104;
 };
 
-&uart0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_xfer &uart0_cts>;
+
+
+
+&uart4 {
 	status = "okay";
+	rockchip,baudrate = <1500000>;
 };
+
+
 
 &tcphy0 {
 	status = "okay";
