@@ -2978,7 +2978,7 @@ int stmmac_dvr_probe(struct device *device,
 			   __func__, ret);
 		goto error_netdev_register;
 	}
-
+        netif_carrier_off(ndev);
 	return ret;
 
 error_netdev_register:
