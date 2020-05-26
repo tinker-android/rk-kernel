@@ -6,6 +6,7 @@
 #include "rk3399-android.dtsi"
 
 / {
+	model = "ROCKPI N10";
 	compatible = "rockchip,rk3399pro-ficus2-linux", "rockchip,rk3399pro";
 	/delete-node/ rk809-sound;
     chosen {
@@ -400,11 +401,19 @@
 	};
 };
 
+&i2c7 {
+	status = "okay";
+};
+
 &i2c8 {
 	status = "okay";
 	i2c-scl-rising-time-ns = <345>;
 	i2c-scl-falling-time-ns = <11>;
 	clock-frequency = <100000>;
+};
+
+&spi1 {
+	status = "disabled";
 };
 
 &i2s0 {
@@ -430,6 +439,10 @@
 };
 
 &pwm0 {
+	status = "okay";
+};
+
+&pwm1 {
 	status = "okay";
 };
 
@@ -587,6 +600,10 @@
 &uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_xfer &uart0_cts>;
+	status = "okay";
+};
+
+&uart4 {
 	status = "okay";
 };
 
