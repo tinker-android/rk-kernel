@@ -213,7 +213,7 @@
 	sdio_pwrseq: sdio-pwrseq {
 		status = "okay";
 		compatible = "mmc-pwrseq-simple";
-		clocks = <&rk809 1>;
+		clocks = <&hym8563>;
 		clock-names = "ext_clock";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wifi_enable_h>;
@@ -310,8 +310,6 @@
 
 	wireless-bluetooth {
 		compatible = "bluetooth-platdata";
-		clocks = <&rk809 1>;
-		clock-names = "ext_clock";
 		uart_rts_gpios = <&gpio2 RK_PC3 GPIO_ACTIVE_LOW>;
 		pinctrl-names = "default", "rts_gpio";
 		pinctrl-0 = <&uart0_rts>;
@@ -812,9 +810,19 @@
 
 &i2c2 {
 	status = "okay";
-	i2c-scl-rising-time-ns = <300>;
-	i2c-scl-falling-time-ns = <15>;
-	clock-frequency=<400000>;
+	clock-frequency = <400000>;
+
+	hym8563: hym8563@51 {
+		compatible = "haoyu,hym8563";
+		reg = <0x51>;
+		#clock-cells = <0>;
+		clock-frequency = <32768>;
+		clock-output-names = "hym8563";
+		pinctrl-names = "default";
+		pinctrl-0 = <&hym8563_int>;
+		interrupt-parent = <&gpio4>;
+		interrupts = <30 IRQ_TYPE_LEVEL_LOW>;
+	};
 };
 
 &i2c7 {
@@ -1153,6 +1161,13 @@
 		hp_det: hp-det {
 			rockchip,pins =
 				<2 RK_PB4 0 &pcfg_pull_up>;
+		};
+	};
+
+	hym8563 {
+		hym8563_int: hym8563-int {
+			rockchip,pins =
+				<4 RK_PD6 0 &pcfg_pull_up>;
 		};
 	};
 
