@@ -34,13 +34,19 @@
 #define LENSFACTOR 1000
 
 /* SMBus ARA Address */
-#define	CM3218_ADDR_ARA			0x0C
+#define	CM3218_ADDR_ARA			    0x0C
 
 /* CM3218 CMD Registers */
-#define	CM3218_REG_ADDR_CMD		0x00
-#define	CM3218_CMD_ALS_SD		0x0001
+#define	CM3218_REG_ADDR_CMD		    0x00
+#define	CM3218_CMD_ALS_SD		    0x0001
 #define	CM3218_CMD_ALS_INT_EN		0x0002
-#define	CM3218_CMD_ALS_INT_DISABLE 0x0000
+#define	CM3218_CMD_ALS_INT_DISABLE  0x0000
+
+#define	CM3218_CMD_ALS_SM_SHIFT		11
+#define CM3218_CMD_ALS_SM_NORMAL    (0 << CM3218_CMD_ALS_SM_SHIFT)
+#define CM3218_CMD_ALS_SM_MID       (3 << CM3218_CMD_ALS_SM_SHIFT)
+#define CM3218_CMD_ALS_SM_LOW       (2 << CM3218_CMD_ALS_SM_SHIFT)
+#define CM3218_CMD_ALS_SM_HIGH      (1 << CM3218_CMD_ALS_SM_SHIFT)
 
 #define	CM3218_CMD_ALS_IT_SHIFT		6
 #define	CM3218_CMD_ALS_IT_MASK		(3 << CM3218_CMD_ALS_IT_SHIFT)
@@ -48,9 +54,9 @@
 #define	CM3218_CMD_ALS_IT_1T		(1 << CM3218_CMD_ALS_IT_SHIFT)
 #define	CM3218_CMD_ALS_IT_2T		(2 << CM3218_CMD_ALS_IT_SHIFT)
 #define	CM3218_CMD_ALS_IT_4T		(3 << CM3218_CMD_ALS_IT_SHIFT)
-#define	CM3218_DEFAULT_CMD		(CM3218_CMD_ALS_IT_1T)
+#define	CM3218_DEFAULT_CMD		    (CM3218_CMD_ALS_SM_HIGH | CM3218_CMD_ALS_IT_1T)
 
-#define	CM3218_ALS_PERS 0x0020
+#define	CM3218_ALS_PERS             0x0020
 
 #define	CM3218_REG_ADDR_ALS_WH		0x01
 #define	CM3218_DEFAULT_ALS_WH		0x000C
@@ -278,30 +284,34 @@ static int sensor_init(struct i2c_client *client)
 
 static int light_report_value(struct input_dev *input, int data)
 {
-	unsigned char index = 0;
+    unsigned char index = 0;
 
-	if (data <= 700) {
-		index = 0;
-	} else if (data <= 1400) {
-		index = 1;
-	} else if (data <= 2800) {
-		index = 2;
-	} else if (data <= 5600) {
-		index = 3;
-	} else if (data <= 11200) {
-		index = 4;
-	} else if (data <= 22400) {
-		index = 5;
-	} else if (data <= 44800) {
-		index = 6;
-	} else {
-		index = 7;
-	}
+    if (data <= 10) {
+        index = 0;
+    } else if (data <= 41) {
+        index = 1;
+    } else if (data <= 91) {
+        index = 2;
+    } else if (data <= 161) {
+        index = 3;
+    } else if (data <= 226) {
+        index = 4;
+    } else if (data <= 321) {
+        index = 5;
+    } else if (data <= 641) {
+        index = 6;
+    } else if (data <= 1281) {
+        index = 7;
+    } else{
+        index = 8;
+    }
 
-	input_report_abs(input, ABS_MISC, index);
-	input_sync(input);
+    printk("lilili:data=%d,index=%d\n", data, index);
 
-	return index;
+    input_report_abs(input, ABS_MISC, index);
+    input_sync(input);
+
+    return index;
 }
 
 static int cm3218_read_lux(struct i2c_client *client, int *lux)
@@ -319,8 +329,9 @@ static int cm3218_read_lux(struct i2c_client *client, int *lux)
 	if (lux_data < 0)
 		return lux_data;
 
-	*lux  = lux_data * LENSFACTOR;
-	*lux /= 1000;
+    *lux  = lux_data;
+//	*lux  = lux_data * LENSFACTOR;
+//	*lux /= 1000;
 	return 0;
 }
 
@@ -337,9 +348,13 @@ static int sensor_report_value(struct i2c_client *client)
 		disable_interrupt(client);
 	}
 
+
+
 	cm3218_read_lux(client, &result);
 	als_code = result;
-	index = light_report_value(sensor->input_dev, 200 * result);
+    printk("lilili:als_code=%d\n", als_code);
+    result = (21 * result) / 1000;
+	index = light_report_value(sensor->input_dev, result);
 
 	/* enable interrupt after read data */
 	if (sensor->pdata->irq_enable) {

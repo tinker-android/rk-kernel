@@ -796,6 +796,18 @@
 	i2c-scl-rising-time-ns = <300>;
 	i2c-scl-falling-time-ns = <15>;
 	clock-frequency=<400000>;
+
+	sensor@10 {
+		status = "okay";
+		compatible = "capella,light_cm3218";
+		pinctrl-names = "default";
+		pinctrl-0 = <&cm3218_irq_gpio>;
+		reg = <0x10>;
+		type = <SENSOR_TYPE_LIGHT>;
+		irq-gpio = <&gpio3 RK_PD4 IRQ_TYPE_EDGE_FALLING>;
+		irq_enable = <1>;
+		poll_delay_ms = <30>;
+	};
 };
 
 &i2c2 {
@@ -1266,6 +1278,12 @@
 		pwm3a_pin_pull_down: pwm3a-pin-pull-down {
 			rockchip,pins =
 				<0 RK_PA6 RK_FUNC_1 &pcfg_pull_down>;
+		};
+	};
+
+	cm3218 {
+		cm3218_irq_gpio: cm3218-irq-gpio {
+			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 };
